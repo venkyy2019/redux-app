@@ -11,6 +11,7 @@ class SimpleForm extends Component {
             username: '',
             email: '',
             password: '',
+            loading:false
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -18,20 +19,19 @@ class SimpleForm extends Component {
     handleChange(event) {
         this.setState({
             ...this.state,
-            username: event.target.value,
-            email: event.target.value,
-            password: event.target.value
+            [event.target.name]:event.target.value
         })
     }
 
     handleSubmit(event){
         event.preventDefault();
-        console.log(this.state);
-        this.props.setUser(this.state);
+        const { loading, ...user} = this.state;
+        this.props.setUser(user);
         this.setState({
             username: '',
             password: '',
-            email: ''
+            email: '',
+            loading: true
         })
        
     }
@@ -39,7 +39,8 @@ class SimpleForm extends Component {
         event.preventDefault()
     }
     render() {
-       console.log('Props from stte>>>>>', this.props);
+    //    console.log('Props from stte>>>>>', this.props.user);
+       const {username, email, password} = this.props.user;
         return (
             <div>
                 <Link  to="/">Home</Link>
@@ -75,14 +76,24 @@ class SimpleForm extends Component {
                     </div>
                     <input type="submit" value="submit" />
                 </form>
+                <hr />
+                <div>
+                   {this.state.loading && (
+                     <div>
+                        <p>User Name: {username}</p>
+                        <p>User Email: {email}</p>
+                        <p>Password: {password}</p>
+                     </div>)}
+                </div>
             </div>
         );
     }
 }
 
 function mapStateToProps(state) {
+    console.log('line 92', state);
     return {
-        user:state
+        user:state.reducerFunction
     }
 }
 
@@ -90,5 +101,5 @@ function mapStateToDispatch(dispatch) {
     return bindActionCreators({setUser},dispatch);
 }
 
-export default connect(null,
+export default connect(mapStateToProps,
                        mapStateToDispatch)(SimpleForm);
